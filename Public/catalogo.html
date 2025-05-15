@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Catálogo - Veltrions</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC5cMlIDD2Jo5tEN7M3_vX3U3sWvTyxpIU",
+      authDomain: "veltrions.firebaseapp.com",
+      projectId: "veltrions",
+      storageBucket: "veltrions.firebasestorage.app",
+      messagingSenderId: "783393469416",
+      appId: "1:783393469416:web:482f066a8fd14f83e3aa5d",
+      measurementId: "G-SD5N4YRJ3E"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const contenedor = document.getElementById("productos");
+
+    onAuthStateChanged(auth, async user => {
+      if (!user) return window.location.href = "index.html";
+
+      const productos = [
+        { id: "1", nombre: "Linterna", descripcion: "Linterna potente LED", puntuacion: 4.8, imagen: "https://via.placeholder.com/100?text=Linterna" },
+        { id: "2", nombre: "Pastillas de muña", descripcion: "Pastillas naturales para el estómago", puntuacion: 4.5, imagen: "https://via.placeholder.com/100?text=Muña" },
+        { id: "3", nombre: "Borrador", descripcion: "Borrador blanco de calidad escolar", puntuacion: 4.3, imagen: "https://via.placeholder.com/100?text=Borrador" },
+        { id: "4", nombre: "Galleta soda B con manjar", descripcion: "Galleta crujiente con dulce manjar", puntuacion: 4.9, imagen: "https://via.placeholder.com/100?text=Galleta+con+Manjar" }
+      ];
+
+      productos.forEach(prod => {
+        const card = document.createElement("div");
+        card.innerHTML = `
+          <div style="border:1px solid #ccc;padding:10px;margin:10px;">
+            <img src="${prod.imagen}" alt="${prod.nombre}" style="width:100px;height:100px;"><br>
+            <strong>${prod.nombre}</strong><br>
+            ${prod.descripcion}<br>
+            Puntuación: ${prod.puntuacion}<br>
+            <button onclick='realizarPedido("${prod.id}", "${prod.nombre}", "${user.email}")'>Pedir</button>
+          </div>
+        `;
+        contenedor.appendChild(card);
+      });
+    });
+
+    async function realizarPedido(productoId, nombre, usuario) {
+      await addDoc(collection(db, "pedidos"), {
+        productoId,
+        nombre,
+        usuario,
+        fecha: new Date().toISOString()
+      });
+      alert("Pedido realizado correctamente");
+    }
+  </script>
+</head>
+<body>
+  <h1>Catálogo Veltrions</h1>
+  <div id="productos">Cargando productos...</div>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Veltrions - Inicio</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0f2b10;
+      font-family: Arial, sans-serif;
+      color: #f3a6f3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    .logo {
+      width: 180px;
+      margin-bottom: 30px;
+    }
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 80%;
+      max-width: 300px;
+    }
+    .btn {
+      padding: 15px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+    }
+    .btn-google {
+      background-color: white;
+      color: black;
+    }
+    .btn-register {
+      background-color: #333;
+      color: white;
+    }
+    .btn-login {
+      background-color: transparent;
+      color: white;
+      border: 1px solid white;
+    }
+  </style>
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC5cMlIDD2Jo5tEN7M3_vX3U3sWvTyxpIU",
+      authDomain: "veltrions.firebaseapp.com",
+      projectId: "veltrions",
+      storageBucket: "veltrions.appspot.com",
+      messagingSenderId: "783393469416",
+      appId: "1:783393469416:web:482f066a8fd14f83e3aa5d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+
+    window.loginWithGoogle = () => {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider)
+        .then(result => {
+          const name = result.user.displayName || "Usuario";
+          localStorage.setItem("user", name);
+          window.location.href = "catalogo.html";
+        })
+        .catch(error => alert("Error: " + error.message));
+    };
+
+    window.register = () => {
+      const email = prompt("Correo electrónico:");
+      const password = prompt("Contraseña:");
+      if (email && password) {
+        createUserWithEmailAndPassword(auth, email, password)
+          .then(() => {
+            localStorage.setItem("user", email);
+            window.location.href = "catalogo.html";
+          })
+          .catch(error => alert("Error: " + error.message));
+      }
+    };
+
+    window.login = () => {
+      const email = prompt("Correo electrónico:");
+      const password = prompt("Contraseña:");
+      if (email && password) {
+        signInWithEmailAndPassword(auth, email, password)
+          .then(() => {
+            localStorage.setItem("user", email);
+            window.location.href = "catalogo.html";
+          })
+          .catch(error => alert("Error: " + error.message));
+      }
+    };
+  </script>
+</head>
+<body>
+  <h1>Veltrions</h1>
+  <img src="logo.png" alt="Logo Veltrions" class="logo"/>
+  <div class="buttons">
+    <button class="btn btn-google" onclick="loginWithGoogle()">Continuar con Google</button>
+    <button class="btn btn-login" onclick="login()">Iniciar sesión con correo</button>
+    <button class="btn btn-register" onclick="register()">Registrarse con correo</button>
+  </div>
+</body>
+</html>
