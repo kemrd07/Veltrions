@@ -2,80 +2,59 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Veltrions - Admin</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #111;
-      color: #f3f3f3;
-      margin: 0;
-      padding: 1rem;
-    }
-    h1 {
-      color: #00e676;
-    }
-    .pedido {
-      background: #222;
-      padding: 1rem;
-      border-radius: 10px;
-      margin-bottom: 1rem;
-      box-shadow: 0 0 5px #00e676;
-    }
-    .pedido p {
-      margin: 0.3rem 0;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administración - Veltrions</title>
+  <script type="module" src="../firebase.js"></script>
+  <script type="module" src="../admin.js"></script>
+  <link rel="stylesheet" href="../styles.css" />
 </head>
 <body>
-  <h1>Pedidos Recibidos</h1>
-  <div id="pedidos"></div>
+  <header>
+    <h1>Panel de Administración Veltrions</h1>
+    <p id="userEmail"></p>
+    <button onclick="logout()">Cerrar sesión</button>
+  </header>
 
-  <script type="module">
-    // Importar módulos de Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  <main>
+    <section id="soloSuperadmin" style="display:none;">
+      <h2>Gestión Avanzada (Solo Superadmin)</h2>
+      <button onclick="verEstadisticas()">Ver estadísticas</button>
+      <button onclick="verComentarios()">Ver comentarios y calificaciones</button>
 
-    // Tu configuración de Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyC5cMlIDD2Jo5tEN7M3_vX3U3sWvTyxpIU",
-      authDomain: "veltrions.firebaseapp.com",
-      projectId: "veltrions",
-      storageBucket: "veltrions.firebasestorage.app",
-      messagingSenderId: "783393469416",
-      appId: "1:783393469416:web:482f066a8fd14f83e3aa5d",
-      measurementId: "G-SD5N4YRJ3E"
-    };
+      <h3>Registrar códigos QR</h3>
+      <input type="text" id="qrCode" placeholder="Código QR" />
+      <input type="number" id="qrPoints" placeholder="Puntos" />
+      <button onclick="registrarCodigoQR()">Registrar</button>
 
-    // Inicializar Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+      <h3>Registrar Ticket Rasca y Gana</h3>
+      <input type="text" id="ticketName" placeholder="Nombre del ticket" />
+      <input type="number" id="ticketPoints" placeholder="Puntos" />
+      <button onclick="registrarTicket()">Registrar Ticket</button>
+    </section>
 
-    // Obtener y mostrar pedidos
-    async function cargarPedidos() {
-      const pedidosContainer = document.getElementById('pedidos');
-      const pedidosSnapshot = await getDocs(collection(db, "pedidos"));
+    <section id="adminBase" style="display:none;">
+      <h2>Gestión de Pedidos</h2>
+      <button onclick="verPedidos()">Ver pedidos</button>
 
-      if (pedidosSnapshot.empty) {
-        pedidosContainer.innerHTML = "<p>No hay pedidos aún.</p>";
-        return;
-      }
+      <h3>Modificar Stock de Productos</h3>
+      <input type="text" id="productoID" placeholder="ID del producto" />
+      <input type="number" id="nuevoStock" placeholder="Nuevo stock" />
+      <button onclick="modificarStock()">Actualizar Stock</button>
 
-      pedidosSnapshot.forEach((doc) => {
-        const pedido = doc.data();
-        const pedidoDiv = document.createElement('div');
-        pedidoDiv.className = 'pedido';
-        pedidoDiv.innerHTML = `
-          <p><strong>Nombre:</strong> ${pedido.usuarioNombre}</p>
-          <p><strong>Email:</strong> ${pedido.usuarioEmail}</p>
-          <p><strong>Productos:</strong></p>
-          <ul>${pedido.productos.map(p => `<li>${p.nombre}</li>`).join('')}</ul>
-        `;
-        pedidosContainer.appendChild(pedidoDiv);
-      });
+      <h3>Subir Ideas para Productos Nuevos</h3>
+      <input type="text" id="ideaProducto" placeholder="Idea de producto" />
+      <button onclick="enviarIdea()">Enviar</button>
+
+      <h3>Subir PDF Mensual de Ventas</h3>
+      <input type="file" id="pdfVentas" accept=\"application/pdf\" />
+      <button onclick="subirPDF()">Subir PDF</button>
+    </section>
+  </main>
+
+  <script>
+    function logout() {
+      import('../auth.js').then(module => module.logout());
     }
-
-    cargarPedidos();
   </script>
 </body>
 </html>
